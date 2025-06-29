@@ -499,6 +499,21 @@ const FoundationTest = () => {
               </button>
             </form>
 
+            {/* Registration guidance */}
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-blue-800">
+                  <p className="font-medium mb-1">Для тестирования:</p>
+                  <ul className="space-y-1 text-xs">
+                    <li>• Используйте уникальный email для каждой новой регистрации</li>
+                    <li>• Если у вас уже есть аккаунт, обновите страницу - вы автоматически войдете</li>
+                    <li>• Для выхода из существующего аккаунта используйте кнопку "Выйти" в панели</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
             <div className="mt-4 text-center">
               <button
                 onClick={() => setCurrentStep('landing')}
