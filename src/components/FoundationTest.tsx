@@ -167,6 +167,7 @@ const FoundationTest = () => {
 
       if (authError) {
         if (authError.message?.includes('User already registered') || (authError as any).code === 'user_already_exists') {
+          console.warn('User already exists - attempting to sign in existing user:', email)
           // User already exists, attempt to log them in
           try {
             const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
