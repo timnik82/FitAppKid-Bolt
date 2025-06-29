@@ -189,7 +189,7 @@ const FoundationTest = () => {
               .from('profiles')
               .select('*')
               .eq('id', signInData.user.id)
-              .single()
+              .maybeSingle()
 
             if (profileError) {
               setError('Ошибка загрузки профиля: ' + profileError.message)
@@ -197,8 +197,43 @@ const FoundationTest = () => {
               return
             }
 
-            setCurrentUser(profileData)
-            setSuccess('Вход в существующий аккаунт выполнен успешно!')
+            // If no profile exists, create one for the authenticated user
+            if (!profileData) {
+              const { data: newProfileData, error: newProfileError } = await supabase
+                .from('profiles')
+                .insert({
+                  id: signInData.user.id,
+                  email,
+                  display_name: displayName,
+                  is_child: false,
+                  privacy_settings: { data_sharing: false, analytics: false },
+                  preferred_language: 'ru'
+                })
+                .select()
+                .single()
+
+              if (newProfileError) {
+                setError('Ошибка создания профиля: ' + newProfileError.message)
+                setLoading(false)
+                return
+              }
+
+              // Initialize user progress for new profile
+              await supabase
+                .from('user_progress')
+                .insert({
+                  user_id: signInData.user.id,
+                  weekly_points_goal: 100,
+                  monthly_goal_exercises: 20
+                })
+
+              setCurrentUser(newProfileData)
+              setSuccess('Аккаунт найден! Профиль создан успешно!')
+            } else {
+              setCurrentUser(profileData)
+              setSuccess('Вход в существующий аккаунт выполнен успешно!')
+            }
+            
             setTimeout(() => {
               setCurrentStep('dashboard')
               setSuccess(null)
