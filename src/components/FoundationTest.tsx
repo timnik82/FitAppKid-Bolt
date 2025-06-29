@@ -165,7 +165,52 @@ const FoundationTest = () => {
 
       if (authError) {
         if (authError.message?.includes('User already registered') || (authError as any).code === 'user_already_exists') {
-          setError('Этот email уже зарегистрирован. Пожалуйста, используйте другой email или войдите в существующий аккаунт.')
+          // User already exists, attempt to log them in
+          try {
+            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+              email,
+              password,
+            })
+
+            if (signInError) {
+              setError('Этот email уже зарегистрирован, но пароль неверный. Пожалуйста, проверьте ваш пароль или используйте другой email.')
+              setLoading(false)
+              return
+            }
+
+            if (!signInData.user) {
+              setError('Ошибка входа в систему')
+              setLoading(false)
+              return
+            }
+
+            // Get existing profile
+            const { data: profileData, error: profileError } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', signInData.user.id)
+              .single()
+
+            if (profileError) {
+              setError('Ошибка загрузки профиля: ' + profileError.message)
+              setLoading(false)
+              return
+            }
+
+            setCurrentUser(profileData)
+            setSuccess('Вход в существующий аккаунт выполнен успешно!')
+            setTimeout(() => {
+              setCurrentStep('dashboard')
+              setSuccess(null)
+            }, 2000)
+            setLoading(false)
+            return
+
+          } catch (signInErr: any) {
+            setError('Ошибка входа в систему: ' + signInErr.message)
+            setLoading(false)
+            return
+          }
         } else {
           setError('Ошибка регистрации: ' + authError.message)
         }
