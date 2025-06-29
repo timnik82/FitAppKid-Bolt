@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import SchemaOverview from './components/SchemaOverview';
 import DatabaseDashboard from './components/DatabaseDashboard';
 import ExerciseStructureViewer from './components/ExerciseStructureViewer';
+import SecurityGamificationOverview from './components/SecurityGamificationOverview';
 
 function App() {
   const [activeView, setActiveView] = useState('structure');
 
   const views = [
     { id: 'structure', label: 'Exercise Structure Parser', component: ExerciseStructureViewer },
+    { id: 'security', label: 'Security & Gamification', component: SecurityGamificationOverview },
     { id: 'schema', label: 'Schema Overview', component: SchemaOverview },
     { id: 'dashboard', label: 'Database Dashboard', component: DatabaseDashboard }
   ];
