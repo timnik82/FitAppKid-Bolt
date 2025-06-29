@@ -73,7 +73,7 @@ const FoundationTest = () => {
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
-          .single()
+          .maybeSingle()
         
         if (profile) {
           setCurrentUser(profile)
