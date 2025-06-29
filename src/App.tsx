@@ -1,49 +1,43 @@
-import React, { useState } from 'react';
-import SchemaOverview from './components/SchemaOverview';
-import DatabaseDashboard from './components/DatabaseDashboard';
-import ExerciseStructureViewer from './components/ExerciseStructureViewer';
-import SecurityGamificationOverview from './components/SecurityGamificationOverview';
-import FoundationTest from './components/FoundationTest';
+import React from 'react';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import AuthScreen from './components/auth/AuthScreen';
+import ParentDashboard from './components/dashboard/ParentDashboard';
+import ProtectedRoute from './components/ProtectedRoute';
+import SessionManager from './components/SessionManager';
+import { Loader2 } from 'lucide-react';
 
-function App() {
-  const [activeView, setActiveView] = useState('structure');
+const AppContent: React.FC = () => {
+  const { user, profile, loading } = useAuth();
 
-  const views = [
-    { id: 'foundation', label: 'Foundation Test', component: FoundationTest },
-    { id: 'structure', label: 'Exercise Structure Parser', component: ExerciseStructureViewer },
-    { id: 'security', label: 'Security & Gamification', component: SecurityGamificationOverview },
-    { id: 'schema', label: 'Schema Overview', component: SchemaOverview },
-    { id: 'dashboard', label: 'Database Dashboard', component: DatabaseDashboard }
-  ];
-
-  const ActiveComponent = views.find(view => view.id === activeView)?.component || FoundationTest;
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4">
-          <nav className="flex space-x-8">
-            {views.map((view) => (
-              <button
-                key={view.id}
-                onClick={() => setActiveView(view.id)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeView === view.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                {view.label}
-              </button>
-            ))}
-          </nav>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading KidsFit...</p>
         </div>
       </div>
+    );
+  }
 
-      {/* Content */}
-      <ActiveComponent />
-    </div>
+  if (!user || !profile) {
+    return <AuthScreen />;
+  }
+
+  return (
+    <ProtectedRoute>
+      <ParentDashboard />
+    </ProtectedRoute>
+  );
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <SessionManager>
+        <AppContent />
+      </SessionManager>
+    </AuthProvider>
   );
 }
 
