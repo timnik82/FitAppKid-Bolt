@@ -35,7 +35,16 @@
     "db:reset": "supabase db reset",
     "db:push": "supabase db push",
     "db:diff": "supabase db diff",
-    "db:status": "supabase status"
+    "db:status": "supabase status",
+    "test": "chmod +x tests/scripts/run-all-tests.sh && tests/scripts/run-all-tests.sh",
+    "test:setup": "chmod +x tests/scripts/setup-test-environment.sh && tests/scripts/setup-test-environment.sh",
+    "test:database": "psql $TEST_DB_URL -f tests/database/schema-validation.sql",
+    "test:security": "psql $TEST_DB_URL -f tests/security/rls-policy-tests.sql",
+    "test:coppa": "psql $TEST_DB_URL -f tests/coppa/compliance-tests.sql",
+    "test:performance": "psql $TEST_DB_URL -f tests/performance/query-performance.sql",
+    "test:integration": "psql $TEST_DB_URL -f tests/integration/user-workflows.sql",
+    "test:verbose": "VERBOSE=true npm run test",
+    "test:reset": "RESET_DB=true npm run test:setup && npm run test"
   },
   "dependencies": {
     "lucide-react": "^0.344.0",
