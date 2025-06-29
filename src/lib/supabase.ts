@@ -14,7 +14,8 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
-          id: string
+          profile_id: string
+          user_id: string | null
           email: string | null
           display_name: string
           date_of_birth: string | null
@@ -27,7 +28,8 @@ export type Database = {
           preferred_language: string | null
         }
         Insert: {
-          id: string
+          profile_id?: string
+          user_id?: string | null
           email?: string | null
           display_name: string
           date_of_birth?: string | null
@@ -40,7 +42,8 @@ export type Database = {
           preferred_language?: string | null
         }
         Update: {
-          id?: string
+          profile_id?: string
+          user_id?: string | null
           email?: string | null
           display_name?: string
           date_of_birth?: string | null

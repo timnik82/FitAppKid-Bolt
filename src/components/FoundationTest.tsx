@@ -3,7 +3,8 @@ import { supabase } from '../lib/supabase'
 import { UserPlus, Baby, Play, Shield, CheckCircle, XCircle, AlertCircle, Eye, EyeOff, Clock, RotateCcw, Target } from 'lucide-react'
 
 interface Profile {
-  id: string
+  profile_id: string
+  user_id: string | null
   email: string | null
   display_name: string
   date_of_birth: string | null
@@ -14,7 +15,7 @@ interface Profile {
 }
 
 interface Child {
-  id: string
+  profile_id: string
   display_name: string
   date_of_birth: string | null
   age: number
@@ -72,7 +73,7 @@ const FoundationTest = () => {
         const { data: profile } = await supabase
           .from('profiles')
           .select('*')
-          .eq('id', session.user.id)
+          .eq('user_id', session.user.id)
           .maybeSingle()
         
         if (profile) {
@@ -115,13 +116,13 @@ const FoundationTest = () => {
         .select(`
           child_id,
           profiles!parent_child_relationships_child_id_fkey (
-            id,
+            profile_id,
             display_name,
             date_of_birth,
             is_child
           )
         `)
-        .eq('parent_id', currentUser.id)
+        .eq('parent_id', currentUser.profile_id)
         .eq('active', true)
 
       if (relError) {
@@ -136,7 +137,7 @@ const FoundationTest = () => {
           ? new Date().getFullYear() - new Date(profile.date_of_birth).getFullYear()
           : 0
         return {
-          id: profile.id,
+          profile_id: profile.profile_id,
           display_name: profile.display_name,
           date_of_birth: profile.date_of_birth,
           age
@@ -188,7 +189,7 @@ const FoundationTest = () => {
             const { data: profileData, error: profileError } = await supabase
               .from('profiles')
               .select('*')
-              .eq('id', signInData.user.id)
+              .eq('user_id', signInData.user.id)
               .maybeSingle()
 
             if (profileError) {
@@ -202,7 +203,7 @@ const FoundationTest = () => {
               const { data: newProfileData, error: newProfileError } = await supabase
                 .from('profiles')
                 .insert({
-                  id: signInData.user.id,
+                  user_id: signInData.user.id,
                   email,
                   display_name: displayName,
                   is_child: false,
@@ -222,7 +223,7 @@ const FoundationTest = () => {
               await supabase
                 .from('user_progress')
                 .insert({
-                  user_id: signInData.user.id,
+                  user_id: newProfileData.profile_id,
                   weekly_points_goal: 100,
                   monthly_goal_exercises: 20
                 })
@@ -263,7 +264,7 @@ const FoundationTest = () => {
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .insert({
-          id: authData.user.id,
+          user_id: authData.user.id,
           email,
           display_name: displayName,
           is_child: false,
@@ -283,7 +284,7 @@ const FoundationTest = () => {
       await supabase
         .from('user_progress')
         .insert({
-          user_id: authData.user.id,
+          user_id: profileData.profile_id,
           weekly_points_goal: 100,
           monthly_goal_exercises: 20
         })
@@ -320,7 +321,7 @@ const FoundationTest = () => {
       const { data: childProfile, error: childError } = await supabase
         .from('profiles')
         .insert({
-          id: crypto.randomUUID(),
+          user_id: null, // Child profiles don't have auth users
           display_name: childName,
           date_of_birth: dateOfBirth,
           is_child: true,
@@ -342,8 +343,8 @@ const FoundationTest = () => {
       const { error: relationshipError } = await supabase
         .from('parent_child_relationships')
         .insert({
-          parent_id: currentUser.id,
-          child_id: childProfile.id,
+          parent_id: currentUser.profile_id,
+          child_id: childProfile.profile_id,
           relationship_type: 'parent',
           consent_given: true,
           consent_date: new Date().toISOString(),
@@ -360,7 +361,7 @@ const FoundationTest = () => {
       await supabase
         .from('user_progress')
         .insert({
-          user_id: childProfile.id,
+          user_id: childProfile.profile_id,
           weekly_points_goal: 50,
           monthly_goal_exercises: 15
         })
@@ -732,7 +733,7 @@ const FoundationTest = () => {
                 </p>
               ) : (
                 children.map((child) => (
-                  <div key={child.id} className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                  <div key={child.profile_id} className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
                     <Baby className="w-5 h-5 text-blue-600" />
                     <div className="flex-1">
                       <div className="font-medium text-blue-900">{child.display_name}</div>
