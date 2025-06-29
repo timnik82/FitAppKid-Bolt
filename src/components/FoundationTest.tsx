@@ -164,7 +164,11 @@ const FoundationTest = () => {
       })
 
       if (authError) {
-        setError('Ошибка регистрации: ' + authError.message)
+        if (authError.message?.includes('User already registered') || (authError as any).code === 'user_already_exists') {
+          setError('Этот email уже зарегистрирован. Пожалуйста, используйте другой email или войдите в существующий аккаунт.')
+        } else {
+          setError('Ошибка регистрации: ' + authError.message)
+        }
         setLoading(false)
         return
       }
