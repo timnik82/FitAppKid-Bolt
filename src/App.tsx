@@ -3,20 +3,20 @@ import SchemaOverview from './components/SchemaOverview';
 import DatabaseDashboard from './components/DatabaseDashboard';
 import ExerciseStructureViewer from './components/ExerciseStructureViewer';
 import SecurityGamificationOverview from './components/SecurityGamificationOverview';
-import TestInterface from './components/TestInterface';
+import FoundationTest from './components/FoundationTest';
 
 function App() {
   const [activeView, setActiveView] = useState('structure');
 
   const views = [
-    { id: 'test', label: 'Test Interface', component: TestInterface },
+    { id: 'foundation', label: 'Foundation Test', component: FoundationTest },
     { id: 'structure', label: 'Exercise Structure Parser', component: ExerciseStructureViewer },
     { id: 'security', label: 'Security & Gamification', component: SecurityGamificationOverview },
     { id: 'schema', label: 'Schema Overview', component: SchemaOverview },
     { id: 'dashboard', label: 'Database Dashboard', component: DatabaseDashboard }
   ];
 
-  const ActiveComponent = views.find(view => view.id === activeView)?.component || ExerciseStructureViewer;
+  const ActiveComponent = views.find(view => view.id === activeView)?.component || FoundationTest;
 
   return (
     <div className="min-h-screen bg-gray-50">
