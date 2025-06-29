@@ -286,20 +286,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
-      const { data: childProfileData, error } = await supabase
-        .rpc('create_child_profile_and_link', {
-          parent_profile_id: profile.profile_id,
-          child_display_name: name,
-          child_date_of_birth: dateOfBirth
+      // Create child profile directly
+      const { data: childProfile, error: childError } = await supabase
+        .from('profiles')
+        .insert({
+          display_name: name,
+          date_of_birth: dateOfBirth,
+          is_child: true,
+          parent_consent_given: true,
+          parent_consent_date: new Date().toISOString(),
+          privacy_settings: { data_sharing: false, analytics: false },
+          preferred_language: 'en'
+        })
+        .select()
+        .single();
+
+      if (childError) {
+        throw new Error(`Failed to create child profile: ${childError.message}`);
+      }
+
+      // Create parent-child relationship
+      const { error: relationshipError } = await supabase
+        .from('parent_child_relationships')
+        .insert({
+          parent_id: profile.profile_id,
+          child_id: childProfile.profile_id,
+          relationship_type: 'parent',
+          consent_given: true,
+          consent_date: new Date().toISOString(),
+          active: true
         });
 
-      if (error) {
-        throw new Error(`Failed to create child profile: ${error.message}`);
+      if (relationshipError) {
+        throw new Error(`Failed to create parent-child relationship: ${relationshipError.message}`);
       }
 
-      if (!childProfileData || childProfileData.length === 0) {
-        throw new Error('Failed to create child profile');
-      }
+      // Initialize user progress for child
+      await supabase
+        .from('user_progress')
+        .insert({
+          user_id: childProfile.profile_id,
+          weekly_points_goal: 100,
+          monthly_goal_exercises: 20
+        });
 
       // Refresh children list
       await loadChildren();

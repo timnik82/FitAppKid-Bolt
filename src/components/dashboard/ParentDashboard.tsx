@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Baby, UserPlus, Settings, Activity, Trophy, LogOut, Plus, Calendar, Clock, Star } from 'lucide-react';
+import { Baby, UserPlus, Settings, Activity, Trophy, LogOut, Plus, Calendar, Clock, Star, Users } from 'lucide-react';
 import AddChildModal from './AddChildModal';
 
 const ParentDashboard: React.FC = () => {
