@@ -440,10 +440,10 @@ const FoundationTest = () => {
               <Baby className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Fitness Infantil
+              Детский Фитнес
             </h1>
             <p className="text-gray-600">
-              Aplicação segura para atividade física infantil
+              Безопасное приложение для физической активности детей
             </p>
           </div>
 
@@ -453,13 +453,13 @@ const FoundationTest = () => {
               className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
             >
               <UserPlus className="w-5 h-5" />
-              Registo para Pais
+              Регистрация родителя
             </button>
 
             <div className="text-center text-sm text-gray-500">
-              <p>✅ Compatível com COPPA</p>
-              <p>🔒 Isolamento completo de dados familiares</p>
-              <p>🎮 Gamificação sem métricas de saúde</p>
+              <p>✅ Соответствует COPPA</p>
+              <p>🔒 Полная изоляция данных семьи</p>
+              <p>🎮 Геймификация без метрик здоровья</p>
             </div>
           </div>
         </div>
@@ -474,10 +474,10 @@ const FoundationTest = () => {
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Criar conta de pais
+              Создать родительский аккаунт
             </h2>
             <p className="text-gray-600">
-              Registo simples com verificação no Supabase
+              Простая регистрация с проверкой в Supabase
             </p>
           </div>
 
@@ -517,7 +517,7 @@ const FoundationTest = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Palavra-passe
+                  Пароль
                 </label>
                 <input
                   type="password"
@@ -532,7 +532,7 @@ const FoundationTest = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nome para exibição
+                  Имя для отображения
                 </label>
                 <input
                   type="text"
@@ -540,7 +540,7 @@ const FoundationTest = () => {
                   onChange={(e) => setDisplayName(e.target.value)}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Maria Silva"
+                  placeholder="Анна Петрова"
                 />
               </div>
 
@@ -549,7 +549,7 @@ const FoundationTest = () => {
                 disabled={loading}
                 className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
               >
-                {loading ? 'A criar conta...' : 'Criar conta'}
+                {loading ? 'Создание аккаунта...' : 'Создать аккаунт'}
               </button>
             </form>
 
@@ -558,11 +558,11 @@ const FoundationTest = () => {
               <div className="flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                 <div className="text-sm text-blue-800">
-                  <p className="font-medium mb-1">Para teste:</p>
+                  <p className="font-medium mb-1">Для тестирования:</p>
                   <ul className="space-y-1 text-xs">
-                    <li>• Use um email único para cada novo registo</li>
-                    <li>• Se já tem conta, atualize a página - entrará automaticamente</li>
-                    <li>• Para sair da conta existente use o botão "Sair" no painel</li>
+                    <li>• Используйте уникальный email для каждой новой регистрации</li>
+                    <li>• Если у вас уже есть аккаунт, обновите страницу - вы автоматически войдете</li>
+                    <li>• Для выхода из существующего аккаунта используйте кнопку "Выйти" в панели</li>
                   </ul>
                 </div>
               </div>
@@ -573,7 +573,7 @@ const FoundationTest = () => {
                 onClick={() => setCurrentStep('landing')}
                 className="text-sm text-blue-600 hover:text-blue-700"
               >
-                ← Voltar ao início
+                ← Вернуться на главную
               </button>
             </div>
           </div>
@@ -591,9 +591,9 @@ const FoundationTest = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Bem-vindo, {currentUser?.display_name}!
+                Добро пожаловать, {currentUser?.display_name}!
               </h1>
-              <p className="text-gray-600">Painel de controlo parental</p>
+              <p className="text-gray-600">Родительская панель управления</p>
             </div>
             <div className="flex items-center gap-4">
               <button
@@ -601,13 +601,13 @@ const FoundationTest = () => {
                 className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
               >
                 <Shield className="w-4 h-4" />
-                Teste de isolamento de dados
+                Тест изоляции данных
               </button>
               <button
                 onClick={handleLogout}
                 className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
               >
-                Sair
+                Выйти
               </button>
             </div>
           </div>
@@ -636,13 +636,13 @@ const FoundationTest = () => {
           {/* Children Management */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">Os meus filhos</h2>
+              <h2 className="text-xl font-semibold text-gray-900">Мои дети</h2>
               <button
                 onClick={() => setShowAddChild(!showAddChild)}
                 className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
                 <Baby className="w-4 h-4" />
-                Adicionar Criança
+                Добавить ребенка
               </button>
             </div>
 
@@ -652,7 +652,7 @@ const FoundationTest = () => {
                 <form onSubmit={handleAddChild} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Nome da criança
+                      Имя ребенка
                     </label>
                     <input
                       type="text"
@@ -660,12 +660,12 @@ const FoundationTest = () => {
                       onChange={(e) => setChildName(e.target.value)}
                       required
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      placeholder="João"
+                      placeholder="Петя"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Idade
+                      Возраст
                     </label>
                     <input
                       type="number"
@@ -687,13 +687,13 @@ const FoundationTest = () => {
                       className="flex items-center gap-2 text-sm text-blue-700 hover:text-blue-900"
                     >
                       {showDebugInfo ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      {showDebugInfo ? 'Ocultar' : 'Mostrar'} informação técnica
+                      {showDebugInfo ? 'Скрыть' : 'Показать'} техническую информацию
                     </button>
                     {showDebugInfo && (
                       <div className="mt-2 text-xs text-blue-600">
-                        <p><strong>ID do perfil parental:</strong> {currentUser?.profile_id}</p>
-                        <p><strong>Método de criação:</strong> supabase.rpc('create_child_profile_and_link')</p>
-                        <p><strong>Conformidade COPPA:</strong> user_id = NULL, parent_consent_given = true</p>
+                        <p><strong>Родительский профиль ID:</strong> {currentUser?.profile_id}</p>
+                        <p><strong>Метод создания:</strong> supabase.rpc('create_child_profile_and_link')</p>
+                        <p><strong>COPPA соответствие:</strong> user_id = NULL, parent_consent_given = true</p>
                       </div>
                     )}
                   </div>
@@ -704,14 +704,14 @@ const FoundationTest = () => {
                       disabled={loading}
                       className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
                     >
-                      {loading ? 'A adicionar...' : 'Adicionar'}
+                      {loading ? 'Добавление...' : 'Добавить'}
                     </button>
                     <button
                       type="button"
                       onClick={() => setShowAddChild(false)}
                       className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
                     >
-                      Cancelar
+                      Отмена
                     </button>
                   </div>
                 </form>
@@ -722,7 +722,7 @@ const FoundationTest = () => {
             <div className="space-y-3">
               {children.length === 0 ? (
                 <p className="text-gray-500 text-center py-4">
-                  Ainda não foram adicionadas crianças
+                  Пока нет добавленных детей
                 </p>
               ) : (
                 children.map((child) => (
@@ -730,10 +730,10 @@ const FoundationTest = () => {
                     <Baby className="w-5 h-5 text-blue-600" />
                     <div className="flex-1">
                       <div className="font-medium text-blue-900">{child.display_name}</div>
-                      <div className="text-sm text-blue-700">{child.age} anos</div>
+                      <div className="text-sm text-blue-700">{child.age} лет</div>
                     </div>
                     <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                      CRIANÇA
+                      РЕБЕНОК
                     </span>
                   </div>
                 ))
@@ -745,26 +745,26 @@ const FoundationTest = () => {
           {testResults && (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Resultados do teste de isolamento de dados
+                Результаты теста изоляции данных
               </h2>
               <div className="space-y-3">
                 <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                  <span className="text-green-900">Perfis visíveis:</span>
+                  <span className="text-green-900">Видимые профили:</span>
                   <span className="font-bold text-green-800">{testResults.profilesVisible}</span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                  <span className="text-blue-900">Relações visíveis:</span>
+                  <span className="text-blue-900">Видимые связи:</span>
                   <span className="font-bold text-blue-800">{testResults.relationshipsVisible}</span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
-                  <span className="text-purple-900">Sessões visíveis:</span>
+                  <span className="text-purple-900">Видимые сессии:</span>
                   <span className="font-bold text-purple-800">{testResults.sessionsVisible}</span>
                 </div>
                 <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <h4 className="font-medium text-yellow-900 mb-1">🔒 Explicação do isolamento</h4>
+                  <h4 className="font-medium text-yellow-900 mb-1">🔒 Объяснение изоляции</h4>
                   <p className="text-sm text-yellow-800">
-                    As políticas RLS permitem ver apenas os dados da sua família. 
-                    Outras famílias estão completamente isoladas ao nível da base de dados.
+                    Политики RLS позволяют видеть только данные вашей семьи. 
+                    Другие семьи полностью изолированы на уровне базы данных.
                   </p>
                 </div>
               </div>
@@ -775,14 +775,14 @@ const FoundationTest = () => {
         {/* Exercises Library */}
         <div className="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Biblioteca de exercícios ({exercises.length} exercícios)
+            Библиотека упражнений ({exercises.length} упражнений)
           </h2>
           
           {exercises.length === 0 ? (
             <div className="text-center py-8">
               <AlertCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-500">Exercícios não encontrados</p>
-              <p className="text-sm text-gray-400">Verifique a ligação à base de dados</p>
+              <p className="text-gray-500">Упражнения не найдены</p>
+              <p className="text-sm text-gray-400">Проверьте подключение к базе данных</p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -817,11 +817,11 @@ const FoundationTest = () => {
                     
                     <div className="grid grid-cols-2 gap-2 mb-3">
                       <div className="bg-gray-50 rounded p-2">
-                        <div className="text-xs text-gray-500">Duração</div>
+                        <div className="text-xs text-gray-500">Длительность</div>
                         <div className="font-medium text-sm">{formatDuration(exercise)}</div>
                       </div>
                       <div className="bg-gray-50 rounded p-2">
-                        <div className="text-xs text-gray-500">Pontos</div>
+                        <div className="text-xs text-gray-500">Очки</div>
                         <div className="font-medium text-sm text-yellow-600">
                           {exercise.adventure_points || 0}
                         </div>
@@ -842,31 +842,31 @@ const FoundationTest = () => {
 
         {/* Footer Info */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="font-semibold text-blue-900 mb-2">✅ Verificação de funcionalidade básica</h3>
+          <h3 className="font-semibold text-blue-900 mb-2">✅ Проверка базового функционала</h3>
           <div className="grid md:grid-cols-4 gap-4 text-sm text-blue-800">
             <div>
-              <h4 className="font-medium mb-1">Registo parental</h4>
-              <p>Criação de conta no Supabase com perfil</p>
+              <h4 className="font-medium mb-1">Регистрация родителя</h4>
+              <p>Создание аккаунта в Supabase с профилем</p>
             </div>
             <div>
-              <h4 className="font-medium mb-1">Adicionar crianças</h4>
-              <p>Criação de perfis infantis através de função SECURITY DEFINER</p>
+              <h4 className="font-medium mb-1">Добавление детей</h4>
+              <p>Создание детских профилей через SECURITY DEFINER функцию</p>
             </div>
             <div>
-              <h4 className="font-medium mb-1">Carregar exercícios</h4>
-              <p>Exibição de dados reais da base de dados</p>
+              <h4 className="font-medium mb-1">Загрузка упражнений</h4>
+              <p>Отображение реальных данных из базы</p>
             </div>
             <div>
-              <h4 className="font-medium mb-1">Isolamento de dados</h4>
-              <p>Verificação de RLS e segurança familiar</p>
+              <h4 className="font-medium mb-1">Изоляция данных</h4>
+              <p>Проверка RLS и семейной безопасности</p>
             </div>
           </div>
           
           <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded">
-            <h4 className="font-medium text-green-900 mb-1">🔧 Solução técnica</h4>
+            <h4 className="font-medium text-green-900 mb-1">🔧 Техническое решение</h4>
             <p className="text-sm text-green-800">
-              Utiliza a função PostgreSQL <code>create_child_profile_and_link</code> com direitos 
-              SECURITY DEFINER para contornar conflitos de políticas RLS na criação de perfis infantis.
+              Используется PostgreSQL функция <code>create_child_profile_and_link</code> с правами 
+              SECURITY DEFINER для обхода конфликтов RLS политик при создании детских профилей.
             </p>
           </div>
         </div>
