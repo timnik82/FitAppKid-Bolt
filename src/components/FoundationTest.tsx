@@ -54,6 +54,7 @@ const FoundationTest = () => {
 
   // Test isolation state
   const [testResults, setTestResults] = useState<any>(null)
+  const [showDebugInfo, setShowDebugInfo] = useState(false)
 
   useEffect(() => {
     loadExercises()
@@ -312,26 +313,18 @@ const FoundationTest = () => {
     setError(null)
 
     try {
-      // Calculate birth year from age
+      // Calculate birth date from age
       const currentYear = new Date().getFullYear()
       const birthYear = currentYear - parseInt(childAge)
       const dateOfBirth = `${birthYear}-01-01`
 
-      // Create child profile
-      const { data: childProfile, error: childError } = await supabase
-        .from('profiles')
-        .insert({
-          user_id: null, // Child profiles don't have auth users
-          display_name: childName,
-          date_of_birth: dateOfBirth,
-          is_child: true,
-          parent_consent_given: true,
-          parent_consent_date: new Date().toISOString(),
-          privacy_settings: { data_sharing: false, analytics: false },
-          preferred_language: 'ru'
+      // Use the SECURITY DEFINER function to create child profile and all relationships
+      const { data: childProfileData, error: childError } = await supabase
+        .rpc('create_child_profile_and_link', {
+          parent_profile_id: currentUser.profile_id,
+          child_display_name: childName,
+          child_date_of_birth: dateOfBirth
         })
-        .select()
-        .single()
 
       if (childError) {
         setError('Ошибка создания профиля ребенка: ' + childError.message)
@@ -339,32 +332,11 @@ const FoundationTest = () => {
         return
       }
 
-      // Create parent-child relationship
-      const { error: relationshipError } = await supabase
-        .from('parent_child_relationships')
-        .insert({
-          parent_id: currentUser.profile_id,
-          child_id: childProfile.profile_id,
-          relationship_type: 'parent',
-          consent_given: true,
-          consent_date: new Date().toISOString(),
-          active: true
-        })
-
-      if (relationshipError) {
-        setError('Ошибка создания связи родитель-ребенок: ' + relationshipError.message)
+      if (!childProfileData || childProfileData.length === 0) {
+        setError('Ошибка: не удалось создать профиль ребенка')
         setLoading(false)
         return
       }
-
-      // Initialize child progress
-      await supabase
-        .from('user_progress')
-        .insert({
-          user_id: childProfile.profile_id,
-          weekly_points_goal: 50,
-          monthly_goal_exercises: 15
-        })
 
       setSuccess('Ребенок успешно добавлен!')
       setChildName('')
@@ -705,6 +677,26 @@ const FoundationTest = () => {
                       placeholder="9"
                     />
                   </div>
+                  
+                  {/* Debug info */}
+                  <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowDebugInfo(!showDebugInfo)}
+                      className="flex items-center gap-2 text-sm text-blue-700 hover:text-blue-900"
+                    >
+                      {showDebugInfo ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showDebugInfo ? 'Скрыть' : 'Показать'} техническую информацию
+                    </button>
+                    {showDebugInfo && (
+                      <div className="mt-2 text-xs text-blue-600">
+                        <p><strong>Родительский профиль ID:</strong> {currentUser?.profile_id}</p>
+                        <p><strong>Метод создания:</strong> supabase.rpc('create_child_profile_and_link')</p>
+                        <p><strong>COPPA соответствие:</strong> user_id = NULL, parent_consent_given = true</p>
+                      </div>
+                    )}
+                  </div>
+                  
                   <div className="flex gap-2">
                     <button
                       type="submit"
@@ -857,7 +849,7 @@ const FoundationTest = () => {
             </div>
             <div>
               <h4 className="font-medium mb-1">Добавление детей</h4>
-              <p>Создание детских профилей с COPPA-соответствием</p>
+              <p>Создание детских профилей через SECURITY DEFINER функцию</p>
             </div>
             <div>
               <h4 className="font-medium mb-1">Загрузка упражнений</h4>
@@ -867,6 +859,14 @@ const FoundationTest = () => {
               <h4 className="font-medium mb-1">Изоляция данных</h4>
               <p>Проверка RLS и семейной безопасности</p>
             </div>
+          </div>
+          
+          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded">
+            <h4 className="font-medium text-green-900 mb-1">🔧 Техническое решение</h4>
+            <p className="text-sm text-green-800">
+              Используется PostgreSQL функция <code>create_child_profile_and_link</code> с правами 
+              SECURITY DEFINER для обхода конфликтов RLS политик при создании детских профилей.
+            </p>
           </div>
         </div>
       </div>
