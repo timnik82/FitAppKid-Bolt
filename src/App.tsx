@@ -3,11 +3,13 @@ import SchemaOverview from './components/SchemaOverview';
 import DatabaseDashboard from './components/DatabaseDashboard';
 import ExerciseStructureViewer from './components/ExerciseStructureViewer';
 import SecurityGamificationOverview from './components/SecurityGamificationOverview';
+import TestInterface from './components/TestInterface';
 
 function App() {
   const [activeView, setActiveView] = useState('structure');
 
   const views = [
+    { id: 'test', label: 'Test Interface', component: TestInterface },
     { id: 'structure', label: 'Exercise Structure Parser', component: ExerciseStructureViewer },
     { id: 'security', label: 'Security & Gamification', component: SecurityGamificationOverview },
     { id: 'schema', label: 'Schema Overview', component: SchemaOverview },
