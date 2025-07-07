@@ -275,9 +275,17 @@ VITE_SUPABASE_ANON_KEY=[anon_key_provided]
 
 ### **Common Commands**
 ```bash
-# Development
-npm run dev                 # Start development server
-npm run build              # Production build
+# IMPORTANT: Use Python server instead of npm run dev (macOS network issues)
+
+# Build and serve (PREFERRED METHOD)
+npm run build                               # Build production version
+cd dist && python3 -m http.server 9999 --bind 127.0.0.1 &  # Start Python server
+# Access at: http://127.0.0.1:9999/
+
+# Development workflow
+npm run build && pkill -f "python.*http.server.*9999" && cd dist && python3 -m http.server 9999 --bind 127.0.0.1 &
+
+# Code quality
 npm run lint               # ESLint check
 npx tsc --noEmit          # TypeScript type check
 
@@ -287,9 +295,11 @@ npm run test:database     # Database tests
 npm run test:security     # Security/RLS tests
 ```
 
-### **Development Notes**
-- **Network Setup**: ✅ RESOLVED - Python HTTP server on localhost:9999 working perfectly
-- **Netlify**: No longer needed - local development fully functional
+### **⚠️ Development Notes - IMPORTANT**
+- **DO NOT USE `npm run dev`**: Has network binding issues on macOS - browser cannot access localhost
+- **ALWAYS USE Python HTTP Server**: Only reliable method for local testing
+- **Must rebuild after changes**: `npm run build` required to see code changes
+- **Server URL**: Always use http://127.0.0.1:9999/ (not localhost:5173)
 - **Database**: Direct Supabase connection working, CLI not installed
 - **Performance**: Build time ~980ms, ready for optimization
 
@@ -325,10 +335,65 @@ Based on code review, possible causes:
 3. **Add console.log** in ExerciseCard onStart handler
 4. **Verify exercise object** has required fields (id, name_ru, etc.)
 
-### **Server Status (Preserve This):**
-- **Python HTTP Server**: Running on http://127.0.0.1:9999/
-- **Process**: Kill with `pkill -f "python.*http.server.*9999"` if needed
-- **Restart**: `npm run build && cd dist && python3 -m http.server 9999 --bind 127.0.0.1`
+### **🐍 Python Server Setup (ALWAYS USE THIS METHOD)**
+
+#### **Why Python Server?**
+- **Vite dev server has network binding issues on macOS** - Cannot access localhost properly
+- **Python HTTP server works reliably** - Serves production build without issues
+- **Required for testing** - Only method that allows browser access to the application
+
+#### **Step-by-Step Server Instructions:**
+
+**1. Build the Application:**
+```bash
+npm run build
+```
+
+**2. Check if Server Already Running:**
+```bash
+lsof -i :9999
+# If output shows Python process, server is already running
+```
+
+**3. Start Python Server (if not running):**
+```bash
+cd dist
+python3 -m http.server 9999 --bind 127.0.0.1 &
+```
+
+**4. Kill Server (if needed):**
+```bash
+pkill -f "python.*http.server.*9999"
+```
+
+**5. Full Restart Sequence:**
+```bash
+# Kill existing server
+pkill -f "python.*http.server.*9999"
+
+# Rebuild with latest changes
+npm run build
+
+# Start fresh server
+cd dist && python3 -m http.server 9999 --bind 127.0.0.1 &
+
+# Verify it's running
+curl -s -I http://127.0.0.1:9999/ | head -1
+```
+
+#### **Access URL:**
+**Always use:** http://127.0.0.1:9999/
+
+#### **Troubleshooting:**
+- **Port in use**: Try `pkill -f "python.*http.server.*9999"` then restart
+- **No response**: Ensure you're in project root, build first with `npm run build`
+- **404 errors**: Verify `dist/` folder exists and contains `index.html`
+- **Old code running**: Always rebuild with `npm run build` after code changes
+
+#### **⚠️ NEVER USE:**
+- `npm run dev` - Network binding issues on macOS
+- `vite preview` - Same network issues
+- Direct Vite development server - Won't be accessible
 
 ---
 
