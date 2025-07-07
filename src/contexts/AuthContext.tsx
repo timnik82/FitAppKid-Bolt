@@ -61,15 +61,106 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [childrenList, setChildrenList] = useState<Child[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Add loading timeout to prevent infinite loading
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (loading) {
+        console.warn('⚠️ Loading timeout reached, forcing loading to false');
+        setLoading(false);
+      }
+    }, 10000); // 10 second timeout
+
+    return () => clearTimeout(timeout);
+  }, [loading]);
+
+  // Wrap loadProfile in useCallback to prevent re-renders
+  const loadProfile = useCallback(async (userId: string, retryCount = 0) => {
+    try {
+      console.log('🔵 Loading profile for userId:', userId, retryCount > 0 ? `(retry ${retryCount})` : '');
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('🔴 Error loading profile:', error);
+        
+        // Retry up to 2 times for network errors
+        if (retryCount < 2 && (error.message.includes('network') || error.message.includes('timeout'))) {
+          console.log('🔄 Retrying profile load...');
+          setTimeout(() => loadProfile(userId, retryCount + 1), 1000);
+          return;
+        }
+        
+        console.warn('⚠️ Profile load failed, setting profile to null');
+        setProfile(null);
+        return;
+      }
+      
+      console.log('✅ Profile loaded:', data ? 'found' : 'not found');
+      setProfile(data);
+    } catch (err) {
+      console.error('🔴 Error loading profile:', err);
+      
+      // Retry for unexpected errors
+      if (retryCount < 2) {
+        console.log('🔄 Retrying profile load due to error...');
+        setTimeout(() => loadProfile(userId, retryCount + 1), 1000);
+        return;
+      }
+      
+      console.warn('⚠️ Profile load failed after retries, setting profile to null');
+      setProfile(null);
+    }
+  }, []);
+
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await loadProfile(session.user.id);
+      try {
+        console.log('🔵 Getting initial session...');
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('🔴 Session retrieval error:', error);
+          console.log('🔵 Clearing invalid session and setting loading to false');
+          setUser(null);
+          setProfile(null);
+          setLoading(false);
+          return;
+        }
+        
+        console.log('🔵 Initial session:', session ? 'found' : 'not found');
+        
+        if (session?.user) {
+          // Validate session is not expired
+          const now = Math.floor(Date.now() / 1000);
+          if (session.expires_at && session.expires_at < now) {
+            console.warn('⚠️ Session expired, clearing...');
+            setUser(null);
+            setProfile(null);
+            setLoading(false);
+            return;
+          }
+          
+          console.log('🔵 Loading profile for user:', session.user.id);
+          setUser(session.user);
+          await loadProfile(session.user.id);
+        } else {
+          setUser(null);
+          setProfile(null);
+        }
+        
+        console.log('🔵 Setting loading to false');
+        setLoading(false);
+      } catch (err) {
+        console.error('🔴 Initial session error:', err);
+        console.log('🔵 Setting loading to false due to error');
+        setUser(null);
+        setProfile(null);
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     getInitialSession();
@@ -77,21 +168,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setUser(session?.user ?? null);
+        console.log('🔵 Auth state change:', event, session ? 'session present' : 'no session');
         
-        if (session?.user) {
-          await loadProfile(session.user.id);
-        } else {
-          setProfile(null);
-          setChildrenList([]);
+        try {
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            console.log('🔵 Auth change: loading profile for user:', session.user.id);
+            await loadProfile(session.user.id);
+          } else {
+            console.log('🔵 Auth change: clearing profile and children');
+            setProfile(null);
+            setChildrenList([]);
+          }
+          
+          console.log('🔵 Auth change: setting loading to false');
+          setLoading(false);
+        } catch (err) {
+          console.error('🔴 Auth state change error:', err);
+          setLoading(false);
         }
-        
-        setLoading(false);
       }
     );
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [loadProfile]);
 
   // Move loadChildren definition up
   const loadChildren = useCallback(async () => {
@@ -147,24 +248,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [profile, loadChildren]);
 
-  const loadProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .maybeSingle();
-      
-      if (error) {
-        console.error('Error loading profile:', error);
-        return;
-      }
-      
-      setProfile(data);
-    } catch (err) {
-      console.error('Error loading profile:', err);
-    }
-  };
 
 
   const signUp = async (email: string, password: string, displayName: string) => {
@@ -294,54 +377,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error('Must be logged in to add children');
     }
 
+    console.log('🔵 Starting addChild process:', { name, dateOfBirth, parentProfileId: profile.profile_id });
+
     try {
-      // Create child profile directly
+      // Use the database function for reliable child creation
+      console.log('🔵 Calling create_child_profile_and_link function...');
       const { data: childProfile, error: childError } = await supabase
-        .from('profiles')
-        .insert({
-          display_name: name,
-          date_of_birth: dateOfBirth,
-          is_child: true,
-          parent_consent_given: true,
-          parent_consent_date: new Date().toISOString(),
-          privacy_settings: { data_sharing: false, analytics: false },
-          preferred_language: 'en'
+        .rpc('create_child_profile_and_link', {
+          parent_profile_id: profile.profile_id,
+          child_display_name: name,
+          child_date_of_birth: dateOfBirth
         })
-        .select()
         .single();
 
       if (childError) {
+        console.error('🔴 Child profile creation failed:', childError);
         throw new Error(`Failed to create child profile: ${childError.message}`);
       }
 
-      // Create parent-child relationship
-      const { error: relationshipError } = await supabase
-        .from('parent_child_relationships')
-        .insert({
-          parent_id: profile.profile_id,
-          child_id: childProfile.profile_id,
-          relationship_type: 'parent',
-          consent_given: true,
-          consent_date: new Date().toISOString(),
-          active: true
-        });
-
-      if (relationshipError) {
-        throw new Error(`Failed to create parent-child relationship: ${relationshipError.message}`);
-      }
-
-      // Initialize user progress for child
-      await supabase
-        .from('user_progress')
-        .insert({
-          user_id: childProfile.profile_id,
-          weekly_points_goal: 100,
-          monthly_goal_exercises: 20
-        });
+      console.log('✅ Child profile created:', childProfile);
 
       // Refresh children list
+      console.log('🔵 Refreshing children list...');
       await loadChildren();
+      console.log('✅ addChild process completed successfully');
     } catch (error: unknown) {
+      console.error('🔴 addChild process failed:', error);
       throw new Error(error instanceof Error ? error.message : 'Failed to add child');
     }
   };

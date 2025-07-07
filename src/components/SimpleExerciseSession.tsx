@@ -39,6 +39,12 @@ const SimpleExerciseSession: React.FC<SimpleExerciseSessionProps> = ({
   onComplete,
   onCancel
 }) => {
+  console.log('🔵 SimpleExerciseSession mounted:', { 
+    exerciseName: exercise?.name_ru || exercise?.name_en,
+    childProfileId,
+    exerciseId: exercise?.id 
+  });
+
   const [sessionState, setSessionState] = useState<'preparing' | 'active' | 'paused' | 'completed'>('preparing');
   const [timer, setTimer] = useState(0);
   const [funRating, setFunRating] = useState(0);

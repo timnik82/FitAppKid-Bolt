@@ -44,8 +44,8 @@ const SessionManager: React.FC<SessionManagerProps> = ({ children }) => {
       }, 24 * 60 * 60 * 1000); // 24 hours
     };
 
-    // Reset timeout on user activity
-    const activities = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    // Reset timeout on user activity (reduced to essential events)
+    const activities = ['click', 'keypress', 'touchstart'];
     
     const handleActivity = () => {
       resetTimeout();
@@ -54,9 +54,18 @@ const SessionManager: React.FC<SessionManagerProps> = ({ children }) => {
     // Set initial timeout
     resetTimeout();
 
-    // Add activity listeners
+    // Add activity listeners (throttled)
+    let throttleTimeout: NodeJS.Timeout | null = null;
+    const throttledHandleActivity = () => {
+      if (throttleTimeout) return;
+      throttleTimeout = setTimeout(() => {
+        handleActivity();
+        throttleTimeout = null;
+      }, 1000); // Throttle to once per second
+    };
+
     activities.forEach(activity => {
-      document.addEventListener(activity, handleActivity, true);
+      document.addEventListener(activity, throttledHandleActivity, true);
     });
 
     // Cleanup
@@ -65,8 +74,11 @@ const SessionManager: React.FC<SessionManagerProps> = ({ children }) => {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
+      if (throttleTimeout) {
+        clearTimeout(throttleTimeout);
+      }
       activities.forEach(activity => {
-        document.removeEventListener(activity, handleActivity, true);
+        document.removeEventListener(activity, throttledHandleActivity, true);
       });
     };
   }, [user, signOut]);

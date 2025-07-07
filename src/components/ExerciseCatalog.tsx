@@ -328,6 +328,7 @@ const ExerciseCatalog: React.FC<ExerciseCatalogProps> = ({ childProfileId }) => 
                   key={exercise.id}
                   exercise={exercise}
                   onStart={(exercise) => {
+                    console.log('🔵 Starting exercise:', exercise.name_ru || exercise.name_en, 'for childProfileId:', childProfileId);
                     setActiveExercise(exercise);
                   }}
                   onViewDetails={(exercise) => {

@@ -203,7 +203,7 @@ const ExerciseSession: React.FC<ExerciseSessionProps> = ({
         });
         progressUpdated = true;
         console.log('Progress updated via RPC function');
-      } catch (rpcError) {
+      } catch {
         console.warn('RPC function not available, trying direct table update');
         
         // Second try: Direct table update
@@ -220,7 +220,7 @@ const ExerciseSession: React.FC<ExerciseSessionProps> = ({
             });
           progressUpdated = true;
           console.log('Progress updated via direct table update');
-        } catch (tableError) {
+        } catch {
           console.warn('Progress table not available, continuing without progress tracking');
           // Don't throw error - allow completion without progress tracking
         }
