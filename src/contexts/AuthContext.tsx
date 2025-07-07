@@ -47,7 +47,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = () => {
+export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
@@ -93,6 +93,54 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
+  // Move loadChildren definition up
+  const loadChildren = useCallback(async () => {
+    if (!profile) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('parent_child_relationships')
+        .select(`
+          child_id,
+          profiles!parent_child_relationships_child_id_fkey (
+            profile_id,
+            display_name,
+            date_of_birth,
+            is_child,
+            parent_consent_given,
+            parent_consent_date
+          )
+        `)
+        .eq('parent_id', profile.profile_id)
+        .eq('active', true);
+
+      if (error) {
+        console.error('Error loading children:', error);
+        return;
+      }
+
+      const children = data.map(item => {
+        const childProfile = item.profiles;
+        const birthDate = childProfile.date_of_birth ? new Date(childProfile.date_of_birth) : null;
+        const age = birthDate ? new Date().getFullYear() - birthDate.getFullYear() : 0;
+        
+        return {
+          profile_id: childProfile.profile_id,
+          display_name: childProfile.display_name,
+          date_of_birth: childProfile.date_of_birth,
+          age,
+          parent_consent_given: childProfile.parent_consent_given,
+          parent_consent_date: childProfile.parent_consent_date,
+        };
+      });
+
+      setChildrenList(children);
+    } catch (error) {
+      console.error('Error loading children:', error);
+      setChildrenList([]);
+    }
+  }, [profile]);
+
   useEffect(() => {
     if (profile) {
       loadChildren();
@@ -118,51 +166,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const loadChildren = useCallback(async () => {
-    if (!profile) return;
-
-    try {
-      const { data: relationships, error } = await supabase
-        .from('parent_child_relationships')
-        .select(`
-          child_id,
-          profiles!parent_child_relationships_child_id_fkey (
-            profile_id,
-            display_name,
-            date_of_birth,
-            is_child,
-            parent_consent_given,
-            parent_consent_date
-          )
-        `)
-        .eq('parent_id', profile.profile_id)
-        .eq('active', true);
-
-      if (error) {
-        console.error('Error loading children:', error);
-        return;
-      }
-
-      const childrenData = relationships?.map(rel => {
-        const childProfile = rel.profiles as Profile;
-        const age = childProfile.date_of_birth 
-          ? new Date().getFullYear() - new Date(childProfile.date_of_birth).getFullYear()
-          : 0;
-        return {
-          profile_id: childProfile.profile_id,
-          display_name: childProfile.display_name,
-          date_of_birth: childProfile.date_of_birth,
-          age,
-          parent_consent_given: childProfile.parent_consent_given,
-          parent_consent_date: childProfile.parent_consent_date
-        };
-      }) || [];
-
-      setChildrenList(childrenData);
-    } catch (err) {
-      console.error('Error loading children:', err);
-    }
-  }, [profile]);
 
   const signUp = async (email: string, password: string, displayName: string) => {
     try {

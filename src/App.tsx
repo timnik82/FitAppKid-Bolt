@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import AuthScreen from './components/auth/AuthScreen';
 import ProtectedRoute from './components/ProtectedRoute';
 import SessionManager from './components/SessionManager';
+import ErrorBoundary from './components/ErrorBoundary';
 import { Loader2 } from 'lucide-react';
 
 // Lazy load dashboard for code splitting
@@ -44,11 +45,13 @@ const AppContent: React.FC = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <SessionManager>
-        <AppContent />
-      </SessionManager>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <SessionManager>
+          <AppContent />
+        </SessionManager>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

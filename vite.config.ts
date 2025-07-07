@@ -7,8 +7,12 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  base: './',  // Use relative paths for better file:// protocol support
   server: {
-    host: '0.0.0.0',
-    port: 5173,
+    host: '127.0.0.1',    // Use IP address instead of localhost
+    port: 5173,           // Default Vite port
+    strictPort: false,    // Allow port fallback
+    open: true,           // Auto-open browser
+    cors: true,           // Enable CORS
   },
 });

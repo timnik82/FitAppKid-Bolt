@@ -85,7 +85,7 @@ const ParentDashboard: React.FC = () => {
             </div>
           </div>
         }>
-          <ExerciseCatalog childId={selectedChildId} />
+          <ExerciseCatalog childId={selectedChildId} childProfileId={selectedChildId} />
         </Suspense>
       </div>
     );
