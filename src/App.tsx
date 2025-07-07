@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import AuthScreen from './components/auth/AuthScreen';
-import ParentDashboard from './components/dashboard/ParentDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import SessionManager from './components/SessionManager';
 import { Loader2 } from 'lucide-react';
+
+// Lazy load dashboard for code splitting
+const ParentDashboard = React.lazy(() => import('./components/dashboard/ParentDashboard'));
 
 const AppContent: React.FC = () => {
   const { user, profile, loading } = useAuth();
@@ -26,7 +28,16 @@ const AppContent: React.FC = () => {
 
   return (
     <ProtectedRoute>
-      <ParentDashboard />
+      <Suspense fallback={
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
+            <p className="text-gray-600">Loading dashboard...</p>
+          </div>
+        </div>
+      }>
+        <ParentDashboard />
+      </Suspense>
     </ProtectedRoute>
   );
 };

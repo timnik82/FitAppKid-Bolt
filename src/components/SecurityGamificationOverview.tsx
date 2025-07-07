@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, Users, Trophy, Activity, Eye, Lock, Star, Target, Heart, XCircle, CheckCircle, AlertTriangle, Database, UserCheck, Award, Gamepad2 } from 'lucide-react';
+import { Shield, Users, Trophy, Activity, Lock, Star, Heart, XCircle, CheckCircle, Database, UserCheck, Gamepad2 } from 'lucide-react';
 
 const SecurityGamificationOverview = () => {
   const [activeSection, setActiveSection] = useState('rls');

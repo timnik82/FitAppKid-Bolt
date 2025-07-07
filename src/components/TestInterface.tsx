@@ -1,20 +1,6 @@
 import React, { useState } from 'react';
-import { Users, UserPlus, Baby, Shield, Play, CheckCircle, Eye, EyeOff, Clock, RotateCcw, Target, Star, Award, AlertTriangle, Lock } from 'lucide-react';
+import { Users, UserPlus, Baby, Shield, Play, CheckCircle, Clock, RotateCcw, Target, Star, Award, AlertTriangle, Lock } from 'lucide-react';
 
-interface User {
-  id: string;
-  email: string;
-  displayName: string;
-  isChild: boolean;
-  dateOfBirth?: string;
-  parentConsentGiven?: boolean;
-  parentConsentDate?: string;
-  parentId?: string;
-  privacySettings: {
-    dataSharing: boolean;
-    analytics: boolean;
-  };
-}
 
 interface Exercise {
   id: string;
@@ -48,7 +34,6 @@ interface ExerciseSession {
 
 const TestInterface = () => {
   const [activeTab, setActiveTab] = useState('registration');
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [showFamily, setShowFamily] = useState<string>('smith');
   const [registrationStep, setRegistrationStep] = useState(1);
 

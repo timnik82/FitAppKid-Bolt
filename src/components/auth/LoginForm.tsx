@@ -24,8 +24,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup }) => {
     try {
       await signIn(email, password);
       setSuccess('Successfully signed in!');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }

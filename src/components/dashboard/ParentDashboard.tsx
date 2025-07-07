@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Baby, UserPlus, Settings, Activity, Trophy, LogOut, Plus, Calendar, Clock, Star, Users } from 'lucide-react';
+import { Baby, UserPlus, Settings, Activity, Trophy, LogOut, Plus, Calendar, Star, Users, ArrowLeft, Loader2 } from 'lucide-react';
 import AddChildModal from './AddChildModal';
+
+// Lazy load the exercise catalog for code splitting
+const ExerciseCatalog = React.lazy(() => import('../ExerciseCatalog'));
 
 const ParentDashboard: React.FC = () => {
   const { profile, children, signOut } = useAuth();
   const [showAddChild, setShowAddChild] = useState(false);
+  const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
 
   const handleLogout = async () => {
     try {
@@ -24,6 +28,68 @@ const ParentDashboard: React.FC = () => {
     if (age === 1) return '1 year old';
     return `${age} years old`;
   };
+
+  const selectedChild = children.find(child => child.profile_id === selectedChildId);
+
+  // If a child is selected, show the exercise catalog
+  if (selectedChildId && selectedChild) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Header with back button */}
+        <div className="bg-white shadow-sm border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setSelectedChildId(null)}
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors mr-2"
+                  style={{ minHeight: '44px' }}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span className="hidden sm:inline">Назад к панели</span>
+                </button>
+                <div className="h-8 w-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Baby className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-lg font-semibold text-gray-900">KidsFit</h1>
+                  <p className="text-xs text-gray-500">
+                    Упражнения для {selectedChild.display_name}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <div className="hidden sm:block text-right">
+                  <p className="text-sm font-medium text-gray-900">{profile?.display_name}</p>
+                  <p className="text-xs text-gray-500">Parent Account</p>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="hidden sm:inline">Sign Out</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Exercise Catalog */}
+        <Suspense fallback={
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="text-center">
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
+              <p className="text-gray-600">Загрузка каталога упражнений...</p>
+            </div>
+          </div>
+        }>
+          <ExerciseCatalog childId={selectedChildId} />
+        </Suspense>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -136,7 +202,10 @@ const ParentDashboard: React.FC = () => {
                           <button className="flex-1 px-3 py-2 bg-white bg-opacity-60 text-gray-700 rounded-md hover:bg-opacity-80 transition-colors text-sm font-medium">
                             View Progress
                           </button>
-                          <button className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium">
+                          <button 
+                            onClick={() => setSelectedChildId(child.profile_id)}
+                            className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+                          >
                             Start Exercise
                           </button>
                         </div>

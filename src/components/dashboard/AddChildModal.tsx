@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { X, Baby, AlertCircle, CheckCircle, Calendar, Info } from 'lucide-react';
+import { X, Baby, AlertCircle, CheckCircle, Info } from 'lucide-react';
 
 interface AddChildModalProps {
   onClose: () => void;
@@ -62,8 +62,8 @@ const AddChildModal: React.FC<AddChildModalProps> = ({ onClose, onSuccess }) => 
       setTimeout(() => {
         onSuccess();
       }, 1500);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }

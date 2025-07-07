@@ -1,6 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
-import type { User, Session } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
+
+interface PrivacySettings {
+  dataSharing: boolean;
+  analytics: boolean;
+  marketing: boolean;
+}
 
 interface Profile {
   profile_id: string;
@@ -11,7 +17,7 @@ interface Profile {
   is_child: boolean | null;
   parent_consent_given: boolean | null;
   parent_consent_date: string | null;
-  privacy_settings: any;
+  privacy_settings: PrivacySettings | null;
   preferred_language: string | null;
   created_at: string | null;
   updated_at: string | null;
@@ -91,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (profile) {
       loadChildren();
     }
-  }, [profile]);
+  }, [profile, loadChildren]);
 
   const loadProfile = async (userId: string) => {
     try {
@@ -112,7 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const loadChildren = async () => {
+  const loadChildren = useCallback(async () => {
     if (!profile) return;
 
     try {
@@ -138,7 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const childrenData = relationships?.map(rel => {
-        const childProfile = rel.profiles as any;
+        const childProfile = rel.profiles as Profile;
         const age = childProfile.date_of_birth 
           ? new Date().getFullYear() - new Date(childProfile.date_of_birth).getFullYear()
           : 0;
@@ -156,7 +162,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err) {
       console.error('Error loading children:', err);
     }
-  };
+  }, [profile]);
 
   const signUp = async (email: string, password: string, displayName: string) => {
     try {
@@ -167,7 +173,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (authError) {
         if (authError.message?.includes('User already registered') || 
-            (authError as any).code === 'user_already_exists') {
+            'code' in authError && authError.code === 'user_already_exists') {
           // Try to sign in instead
           await signIn(email, password);
           return;
@@ -206,8 +212,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           monthly_goal_exercises: 20
         });
 
-    } catch (error: any) {
-      throw new Error(error.message || 'Registration failed');
+    } catch (error: unknown) {
+      throw new Error(error instanceof Error ? error.message : 'Registration failed');
     }
   };
 
@@ -262,8 +268,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
       }
 
-    } catch (error: any) {
-      throw new Error(error.message || 'Sign in failed');
+    } catch (error: unknown) {
+      throw new Error(error instanceof Error ? error.message : 'Sign in failed');
     }
   };
 
@@ -275,8 +281,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       setProfile(null);
       setChildrenList([]);
-    } catch (error: any) {
-      throw new Error(error.message || 'Sign out failed');
+    } catch (error: unknown) {
+      throw new Error(error instanceof Error ? error.message : 'Sign out failed');
     }
   };
 
@@ -332,8 +338,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Refresh children list
       await loadChildren();
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to add child');
+    } catch (error: unknown) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to add child');
     }
   };
 

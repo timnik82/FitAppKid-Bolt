@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, Users, Trophy, Activity, ChevronDown, ChevronRight, Database, Lock, Star, Target } from 'lucide-react';
+import { Shield, Users, Trophy, Activity, Database, Lock, Star, Target } from 'lucide-react';
 
 const DatabaseDashboard = () => {
   const [activeSection, setActiveSection] = useState('rls');

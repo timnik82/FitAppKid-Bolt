@@ -22,7 +22,7 @@ export type Database = {
           is_child: boolean | null
           parent_consent_given: boolean | null
           parent_consent_date: string | null
-          privacy_settings: any | null
+          privacy_settings: { dataSharing: boolean; analytics: boolean; marketing: boolean } | null
           created_at: string | null
           updated_at: string | null
           preferred_language: string | null
@@ -36,7 +36,7 @@ export type Database = {
           is_child?: boolean | null
           parent_consent_given?: boolean | null
           parent_consent_date?: string | null
-          privacy_settings?: any | null
+          privacy_settings?: { dataSharing: boolean; analytics: boolean; marketing: boolean } | null
           created_at?: string | null
           updated_at?: string | null
           preferred_language?: string | null
@@ -50,7 +50,7 @@ export type Database = {
           is_child?: boolean | null
           parent_consent_given?: boolean | null
           parent_consent_date?: string | null
-          privacy_settings?: any | null
+          privacy_settings?: { dataSharing: boolean; analytics: boolean; marketing: boolean } | null
           created_at?: string | null
           updated_at?: string | null
           preferred_language?: string | null

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Database, ArrowRight, AlertCircle, CheckCircle, XCircle, GitBranch, Table, Link, FileText, Zap, Target } from 'lucide-react';
+import { Database, ArrowRight, AlertCircle, CheckCircle, GitBranch, Table, FileText, Zap, Target } from 'lucide-react';
 
 const SchemaOverview = () => {
   const [activeTab, setActiveTab] = useState('tables');

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { UserPlus, Baby, Play, Shield, CheckCircle, XCircle, AlertCircle, Eye, EyeOff, Clock, RotateCcw, Target } from 'lucide-react'
 
@@ -53,7 +53,7 @@ const FoundationTest = () => {
   const [showAddChild, setShowAddChild] = useState(false)
 
   // Test isolation state
-  const [testResults, setTestResults] = useState<any>(null)
+  const [testResults, setTestResults] = useState<{ type: string; message: string; data?: unknown } | null>(null)
   const [showDebugInfo, setShowDebugInfo] = useState(false)
 
   useEffect(() => {
@@ -65,7 +65,7 @@ const FoundationTest = () => {
     if (currentUser && currentStep === 'dashboard') {
       loadChildren()
     }
-  }, [currentUser, currentStep])
+  }, [currentUser, currentStep, loadChildren])
 
   const checkExistingSession = async () => {
     try {
@@ -82,8 +82,9 @@ const FoundationTest = () => {
           setCurrentStep('dashboard')
         }
       }
-    } catch (err: any) {
-      console.error('Session check error:', err.message)
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      console.error('Session check error:', message)
     }
   }
 
@@ -101,13 +102,14 @@ const FoundationTest = () => {
         return
       }
       setExercises(data || [])
-    } catch (err: any) {
-      console.error('Error loading exercises:', err.message)
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      console.error('Error loading exercises:', message)
       setError('Ошибка загрузки упражнений')
     }
   }
 
-  const loadChildren = async () => {
+  const loadChildren = useCallback(async () => {
     if (!currentUser) return
 
     try {
@@ -133,7 +135,7 @@ const FoundationTest = () => {
       }
 
       const childrenData = relationships?.map(rel => {
-        const profile = rel.profiles as any
+        const profile = rel.profiles as Profile
         const age = profile.date_of_birth 
           ? new Date().getFullYear() - new Date(profile.date_of_birth).getFullYear()
           : 0
@@ -146,11 +148,12 @@ const FoundationTest = () => {
       }) || []
 
       setChildren(childrenData)
-    } catch (err: any) {
-      console.error('Error loading children:', err.message)
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      console.error('Error loading children:', message)
       setError('Ошибка загрузки данных детей')
     }
-  }
+  }, [currentUser])
 
   const handleParentRegistration = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -166,7 +169,7 @@ const FoundationTest = () => {
       })
 
       if (authError) {
-        if (authError.message?.includes('User already registered') || (authError as any).code === 'user_already_exists') {
+        if (authError.message?.includes('User already registered') || ('code' in authError && authError.code === 'user_already_exists')) {
           console.warn('User already exists - attempting to sign in existing user:', email)
           // User already exists, attempt to log them in
           try {
@@ -244,8 +247,9 @@ const FoundationTest = () => {
             setLoading(false)
             return
 
-          } catch (signInErr: any) {
-            setError('Ошибка входа в систему: ' + signInErr.message)
+          } catch (signInErr: unknown) {
+            const message = signInErr instanceof Error ? signInErr.message : 'Unknown error';
+            setError('Ошибка входа в систему: ' + message)
             setLoading(false)
             return
           }
@@ -298,9 +302,10 @@ const FoundationTest = () => {
         setSuccess(null)
       }, 2000)
 
-    } catch (err: any) {
-      console.error('Registration error:', err.message)
-      setError('Ошибка регистрации: ' + err.message)
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      console.error('Registration error:', message)
+      setError('Ошибка регистрации: ' + message)
     } finally {
       setLoading(false)
     }
@@ -345,9 +350,10 @@ const FoundationTest = () => {
       setShowAddChild(false)
       loadChildren()
 
-    } catch (err: any) {
-      console.error('Add child error:', err.message)
-      setError('Ошибка добавления ребенка: ' + err.message)
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      console.error('Add child error:', message)
+      setError('Ошибка добавления ребенка: ' + message)
     } finally {
       setLoading(false)
     }
@@ -385,8 +391,9 @@ const FoundationTest = () => {
       })
 
       setSuccess('Тест изоляции данных завершен!')
-    } catch (err: any) {
-      setError('Ошибка теста изоляции: ' + err.message)
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setError('Ошибка теста изоляции: ' + message)
     } finally {
       setLoading(false)
     }
