@@ -44,9 +44,9 @@ run_sql_test() {
     echo -e "${BLUE}Running $test_name...${NC}"
     
     if [ "$VERBOSE" = true ]; then
-        psql "$TEST_DB_URL" -f "$test_file"
+        psql "$TEST_DB_URL" -v ON_ERROR_STOP=1 -f "$test_file"
     else
-        psql "$TEST_DB_URL" -f "$test_file" > /dev/null 2>&1
+        psql "$TEST_DB_URL" -v ON_ERROR_STOP=1 -f "$test_file" > /dev/null 2>&1
     fi
     
     if [ $? -eq 0 ]; then
