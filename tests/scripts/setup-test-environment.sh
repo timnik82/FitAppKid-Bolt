@@ -150,7 +150,7 @@ VALUES (
     'Test Parent',
     false,
     'testparent@example.com',
-    '{"data_sharing": false, "analytics": false}'::jsonb
+    '{"dataSharing": false, "analytics": false, "marketing": false}'::jsonb
 );
 
 -- Create test child
@@ -170,7 +170,7 @@ BEGIN
         '2015-01-01',
         true,
         now(),
-        '{"data_sharing": false, "analytics": false}'::jsonb
+        '{"dataSharing": false, "analytics": false, "marketing": false}'::jsonb
     );
     
     -- Link parent and child
