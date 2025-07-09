@@ -3,8 +3,6 @@ import { supabase } from '../lib/supabase';
 import { Loader2 } from 'lucide-react';
 import ExerciseCard from './ExerciseCard';
 import FilterBar from './FilterBar';
-import SimpleExerciseSession from './SimpleExerciseSession';
-import ErrorBoundary from './ErrorBoundary';
 
 interface Exercise {
   id: string;
@@ -42,9 +40,12 @@ interface Exercise {
 interface ExerciseCatalogProps {
   childId?: string;
   childProfileId?: string;
+  onStartExercise?: (exercise: Exercise) => void;
 }
 
-const ExerciseCatalog: React.FC<ExerciseCatalogProps> = ({ childProfileId }) => {
+const ExerciseCatalog: React.FC<ExerciseCatalogProps> = ({ childProfileId, onStartExercise }) => {
+  console.log('🔵 ExerciseCatalog mounted with childProfileId:', childProfileId);
+  
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +56,6 @@ const ExerciseCatalog: React.FC<ExerciseCatalogProps> = ({ childProfileId }) => 
   const [selectedAdventure, setSelectedAdventure] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
   const [equipmentList, setEquipmentList] = useState<Array<{ id: string; name: string; icon?: string }>>([]);
-  const [activeExercise, setActiveExercise] = useState<Exercise | null>(null);
 
   // Categories with Russian names and colors
   const categories = [
@@ -226,25 +226,6 @@ const ExerciseCatalog: React.FC<ExerciseCatalogProps> = ({ childProfileId }) => 
     exercise.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Show exercise session if an exercise is active
-  if (activeExercise && childProfileId) {
-    return (
-      <ErrorBoundary>
-        <SimpleExerciseSession
-          exercise={activeExercise}
-          childProfileId={childProfileId}
-          onComplete={(result) => {
-            console.log('Exercise completed:', result);
-            setActiveExercise(null);
-            // TODO: Show completion celebration or update progress
-          }}
-          onCancel={() => {
-            setActiveExercise(null);
-          }}
-        />
-      </ErrorBoundary>
-    );
-  }
 
   if (loading) {
     return (
@@ -329,7 +310,9 @@ const ExerciseCatalog: React.FC<ExerciseCatalogProps> = ({ childProfileId }) => 
                   exercise={exercise}
                   onStart={(exercise) => {
                     console.log('🔵 Starting exercise:', exercise.name_ru || exercise.name_en, 'for childProfileId:', childProfileId);
-                    setActiveExercise(exercise);
+                    if (onStartExercise) {
+                      onStartExercise(exercise);
+                    }
                   }}
                   onViewDetails={(exercise) => {
                     console.log('Viewing details for:', exercise.name_ru || exercise.name_en);

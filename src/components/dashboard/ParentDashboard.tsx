@@ -1,15 +1,35 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Baby, UserPlus, Settings, Activity, Trophy, LogOut, Plus, Calendar, Star, Users, ArrowLeft, Loader2 } from 'lucide-react';
+import { Baby, UserPlus, Settings, Activity, Trophy, LogOut, Plus, Calendar, Star, Users, ArrowLeft } from 'lucide-react';
 import AddChildModal from './AddChildModal';
+import ExerciseCatalog from '../ExerciseCatalog';
+import SimpleExerciseSession from '../SimpleExerciseSession';
 
-// Lazy load the exercise catalog for code splitting
-const ExerciseCatalog = React.lazy(() => import('../ExerciseCatalog'));
+interface Exercise {
+  id: string;
+  name_en: string;
+  name_ru: string;
+  description: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  category: {
+    id: string;
+    name_ru: string;
+    name_en: string;
+    color_hex: string;
+    icon: string;
+  };
+  sets_reps_duration: string;
+  fun_variation: string;
+  adventure_points: number;
+  estimated_duration_minutes: number;
+  is_balance_focused: boolean;
+}
 
 const ParentDashboard: React.FC = () => {
   const { profile, children, signOut } = useAuth();
   const [showAddChild, setShowAddChild] = useState(false);
   const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
+  const [activeExercise, setActiveExercise] = useState<Exercise | null>(null);
 
   const handleLogout = async () => {
     try {
@@ -31,8 +51,71 @@ const ParentDashboard: React.FC = () => {
 
   const selectedChild = children.find(child => child.profile_id === selectedChildId);
 
-  // If a child is selected, show the exercise catalog
+  // If a child is selected, show the exercise catalog or session
   if (selectedChildId && selectedChild) {
+    // If an exercise is active, show the exercise session
+    if (activeExercise) {
+      return (
+        <div className="min-h-screen bg-gray-50">
+          {/* Header with back button */}
+          <div className="bg-white shadow-sm border-b border-gray-200">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-between h-16">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setActiveExercise(null)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors mr-2"
+                    style={{ minHeight: '44px' }}
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span className="hidden sm:inline">Назад к упражнениям</span>
+                  </button>
+                  <div className="h-8 w-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                    <Baby className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-lg font-semibold text-gray-900">KidsFit</h1>
+                    <p className="text-xs text-gray-500">
+                      {activeExercise.name_ru || activeExercise.name_en} - {selectedChild.display_name}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  <div className="hidden sm:block text-right">
+                    <p className="text-sm font-medium text-gray-900">{profile?.display_name}</p>
+                    <p className="text-xs text-gray-500">Parent Account</p>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span className="hidden sm:inline">Sign Out</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Exercise Session */}
+          <SimpleExerciseSession
+            exercise={activeExercise}
+            childProfileId={selectedChildId}
+            onComplete={(result) => {
+              console.log('Exercise completed:', result);
+              setActiveExercise(null);
+              // TODO: Show completion celebration or update progress
+            }}
+            onCancel={() => {
+              setActiveExercise(null);
+            }}
+          />
+        </div>
+      );
+    }
+
+    // Otherwise, show the exercise catalog
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Header with back button */}
@@ -77,16 +160,11 @@ const ParentDashboard: React.FC = () => {
         </div>
 
         {/* Exercise Catalog */}
-        <Suspense fallback={
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="text-center">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
-              <p className="text-gray-600">Загрузка каталога упражнений...</p>
-            </div>
-          </div>
-        }>
-          <ExerciseCatalog childId={selectedChildId} childProfileId={selectedChildId} />
-        </Suspense>
+        <ExerciseCatalog 
+          childId={selectedChildId} 
+          childProfileId={selectedChildId} 
+          onStartExercise={setActiveExercise}
+        />
       </div>
     );
   }
