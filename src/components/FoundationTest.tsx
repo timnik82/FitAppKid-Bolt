@@ -212,7 +212,7 @@ const FoundationTest = () => {
                   email,
                   display_name: displayName,
                   is_child: false,
-                  privacy_settings: { data_sharing: false, analytics: false },
+                  privacy_settings: { dataSharing: false, analytics: false, marketing: false },
                   preferred_language: 'ru'
                 })
                 .select()
@@ -274,7 +274,7 @@ const FoundationTest = () => {
           email,
           display_name: displayName,
           is_child: false,
-          privacy_settings: { data_sharing: false, analytics: false },
+          privacy_settings: { dataSharing: false, analytics: false, marketing: false },
           preferred_language: 'ru'
         })
         .select()
