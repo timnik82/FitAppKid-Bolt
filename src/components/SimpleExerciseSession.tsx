@@ -58,6 +58,42 @@ const SimpleExerciseSession: React.FC<SimpleExerciseSessionProps> = ({
     exerciseId: exercise?.id 
   });
 
+  // Early return with loading state if exercise is not provided
+  if (!exercise) {
+    console.warn('⚠️ SimpleExerciseSession: No exercise provided');
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-xl font-semibold text-gray-700 mb-4">Загрузка упражнения...</div>
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+          >
+            Назад
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Validate required exercise fields
+  if (!exercise.id || (!exercise.name_ru && !exercise.name_en)) {
+    console.error('🔴 SimpleExerciseSession: Invalid exercise data', exercise);
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-xl font-semibold text-red-600 mb-4">Ошибка загрузки упражнения</div>
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+          >
+            Назад
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const [sessionState, setSessionState] = useState<'preparing' | 'active' | 'paused' | 'completed'>('preparing');
   const [timer, setTimer] = useState(0);
   const [funRating, setFunRating] = useState(0);
@@ -96,7 +132,7 @@ const SimpleExerciseSession: React.FC<SimpleExerciseSessionProps> = ({
   };
 
   const completeExercise = () => {
-    const pointsEarned = Math.round(exercise.adventure_points * (funRating / 5));
+    const pointsEarned = Math.round((exercise.adventure_points || 0) * (funRating / 5));
     
     setSessionState('completed');
     
@@ -146,7 +182,7 @@ const SimpleExerciseSession: React.FC<SimpleExerciseSessionProps> = ({
             </div>
             <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
               <span className="text-sm font-medium text-yellow-900">Очки:</span>
-              <span className="text-sm text-yellow-700">{Math.round(exercise.adventure_points * (funRating / 5))}</span>
+              <span className="text-sm text-yellow-700">{Math.round((exercise.adventure_points || 0) * (funRating / 5))}</span>
             </div>
             <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
               <span className="text-sm font-medium text-purple-900">Рейтинг веселья:</span>
@@ -211,9 +247,9 @@ const SimpleExerciseSession: React.FC<SimpleExerciseSessionProps> = ({
             </div>
             <div
               className="px-2 py-1 rounded text-xs font-medium text-white"
-              style={{ backgroundColor: getDifficultyColor(exercise.difficulty) }}
+              style={{ backgroundColor: getDifficultyColor(exercise.difficulty || 'Easy') }}
             >
-              {getDifficultyName(exercise.difficulty)}
+              {getDifficultyName(exercise.difficulty || 'Easy')}
             </div>
           </div>
 
@@ -227,16 +263,16 @@ const SimpleExerciseSession: React.FC<SimpleExerciseSessionProps> = ({
             </p>
           )}
 
-          <p className="text-gray-600 mb-4">{exercise.description}</p>
+          <p className="text-gray-600 mb-4">{exercise.description || 'Описание упражнения'}</p>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
               <span className="mr-2">⏰</span>
-              <span>{exercise.sets_reps_duration}</span>
+              <span>{exercise.sets_reps_duration || 'Не указано'}</span>
             </div>
             <div className="flex items-center text-sm text-gray-600 bg-yellow-50 p-3 rounded-lg">
               <span className="mr-2">⚡</span>
-              <span>{exercise.adventure_points} очков</span>
+              <span>{exercise.adventure_points || 0} очков</span>
             </div>
           </div>
         </div>
