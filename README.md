@@ -23,8 +23,8 @@ A comprehensive, COPPA-compliant database schema for a children's fitness applic
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/childrens-fitness-db-schema.git
-   cd childrens-fitness-db-schema
+   git clone https://github.com/yourusername/FitAppKid-Bolt.git
+   cd FitAppKid-Bolt
    ```
 
 2. **Install dependencies**
