@@ -38,8 +38,8 @@ This project is dedicated to providing a safe, inclusive environment for everyon
 
 1. **Fork and Clone**
    ```bash
-   git clone https://github.com/yourusername/childrens-fitness-db-schema.git
-   cd childrens-fitness-db-schema
+   git clone https://github.com/yourusername/FitAppKid-Bolt.git
+   cd FitAppKid-Bolt
    ```
 
 2. **Install Dependencies**
