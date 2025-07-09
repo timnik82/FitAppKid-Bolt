@@ -6,13 +6,7 @@ This directory contains comprehensive tests to validate database integrity, COPP
 
 ```
 tests/
-├── database/           # Database schema and integrity tests
-├── security/          # RLS policies and security tests
-├── coppa/            # COPPA compliance validation
-├── performance/      # Performance and scalability tests
-├── integration/      # End-to-end functionality tests
-├── scripts/          # Test automation scripts
-└── fixtures/         # Test data and utilities
+└── scripts/          # Test automation scripts
 ```
 
 ## Running Tests
@@ -30,12 +24,6 @@ npm install --save-dev
 # Run all tests
 npm run test
 
-# Run specific test suites
-npm run test:database
-npm run test:security
-npm run test:coppa
-npm run test:performance
-npm run test:integration
 ```
 
 ### Test Environment Setup
@@ -50,35 +38,35 @@ npm run test:setup
 
 ## Test Categories
 
-### 1. Database Tests (`tests/database/`)
+### 1. Database Tests
 - Schema validation
 - Migration integrity
 - Constraint verification
 - Data type validation
 - Index performance
 
-### 2. Security Tests (`tests/security/`)
+### 2. Security Tests
 - RLS policy verification
 - Authentication testing
 - Authorization boundaries
 - Data isolation validation
 - Parent-child access control
 
-### 3. COPPA Compliance Tests (`tests/coppa/`)
+### 3. COPPA Compliance Tests
 - Data collection validation
 - Parental consent verification
 - Privacy settings enforcement
 - Data retention compliance
 - Child safety measures
 
-### 4. Performance Tests (`tests/performance/`)
+### 4. Performance Tests
 - Query performance analysis
 - Load testing scenarios
 - Scalability assessment
 - Index optimization
 - Connection pooling
 
-### 5. Integration Tests (`tests/integration/`)
+### 5. Integration Tests
 - User registration flows
 - Exercise tracking workflows
 - Adventure progression
@@ -122,5 +110,4 @@ When adding new tests:
 1. Follow existing naming conventions
 2. Include both positive and negative test cases
 3. Document test purpose and expected outcomes
-4. Ensure tests are deterministic and isolated
-5. Update this README with new test categories
+4. Ensure tests are deterministic and isolated5. Update this README with new test categories
